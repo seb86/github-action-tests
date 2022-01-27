@@ -6,7 +6,7 @@ on:
 
 jobs:
   nightly_build:
-    ##if: github.repository_owner == 'co-cart'
+    if: github.repository_owner == 'seb86'
     runs-on: ubuntu-latest
     name: Nightly builds
 
