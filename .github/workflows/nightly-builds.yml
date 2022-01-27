@@ -1,0 +1,49 @@
+name: Nightly builds
+
+on:
+  schedule:
+    - cron: '0/1 * * * *' # Run every minute.
+
+jobs:
+  nightly_build:
+    if: github.repository_owner == 'co-cart'
+    runs-on: ubuntu-latest
+    name: Nightly builds
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [master]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ matrix.build }} # The branch of the repository we will be using.
+
+      - name: Build release
+        id: build
+        uses: co-cart/action-build@master
+
+      - name: Deploy nightly build
+        id: deploy
+        uses: WebFreak001/deploy-nightly@v1.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.deploy.with.release_id }}/assets{?name,label} # find out this value by opening https://api.github.com/repos/<owner>/<repo>/releases in your browser and copy the full "upload_url" value including the {?name,label} part
+          release_id: 49034208 # same as above (id can just be taken out the upload_url, it's used to find old releases)
+          asset_path: ${{ steps.build.outputs.zip_path }} # path to archive to upload
+          asset_name: cocart-${{ matrix.build }}-nightly-$$.zip # name to upload the release as, use $$ to insert date (YYYYMMDD) and 6 letter commit hash
+          asset_content_type: application/zip # Required by GitHub API
+          max_releases: 1 # Removes all previous uploaded assets before uploading a new one.
+  update:
+    name: Update nightly tag commit ref
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update nightly tag
+        uses: richardsimko/github-tag-action@v1.0.5
+        with:
+          tag_name: nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
