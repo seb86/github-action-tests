@@ -31,8 +31,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: https://uploads.github.com/repos/co-cart/co-cart/releases/${{ steps.deploy.with.release_id }}/assets{?name,label} # find out this value by opening https://api.github.com/repos/<owner>/<repo>/releases in your browser and copy the full "upload_url" value including the {?name,label} part
-          release_id: 49034208 # same as above (id can just be taken out the upload_url, it's used to find old releases)
+          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/58125420/assets{?name,label} # find out this value by opening https://api.github.com/repos/<owner>/<repo>/releases in your browser and copy the full "upload_url" value including the {?name,label} part
+          release_id: 58125420 # same as above (id can just be taken out the upload_url, it's used to find old releases)
           asset_path: ${{ steps.build.outputs.zip_path }} # path to archive to upload
           asset_name: cocart-${{ matrix.build }}-nightly-$$.zip # name to upload the release as, use $$ to insert date (YYYYMMDD) and 6 letter commit hash
           asset_content_type: application/zip # Required by GitHub API
